@@ -1,0 +1,10 @@
+/
+├── public/
+│   └── index.html (renamed from staking.html)
+├── styles/
+│   └── main.css (extracted from inline styles)
+├── js/
+│   └── app.js (extracted from inline script)
+├── vercel.json
+├── package.json
+└── README.md 

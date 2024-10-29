@@ -1,0 +1,26 @@
+:root {
+    --theme-neumorphic-bg: #E4EBF5;
+    --theme-neumorphic-text: #4D4D4D;
+    --theme-neumorphic-primary: #6D5DFC;
+    --theme-neumorphic-shadow-light: #FFFFFF;
+    --theme-neumorphic-shadow-dark: #D1D9E6;
+
+    --theme-brutalist-bg: #ffffff;
+    --theme-brutalist-text: #000000;
+    --theme-brutalist-primary: #ff0000;
+    --theme-brutalist-border: 3px solid #000000;
+
+    --theme-glass-bg: rgba(255, 255, 255, 0.1);
+    --theme-glass-text: #ffffff;
+    --theme-glass-primary: rgba(109, 93, 252, 0.4);
+    --theme-glass-border: 1px solid rgba(255, 255, 255, 0.2);
+    --theme-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --accent-color: #ff0000;
+}
+
+/* Rest of the CSS from the style tag in staking.html */
+body {
+    transition: all 0.3s ease;
+}
+
+/* ... (rest of the CSS from staking.html) ... */ 

@@ -1,0 +1,11 @@
+{
+  "name": "bnb-staking-telegram-webapp",
+  "version": "1.0.0",
+  "description": "BNB Staking Calculator Telegram WebApp",
+  "scripts": {
+    "start": "serve public"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+} 
